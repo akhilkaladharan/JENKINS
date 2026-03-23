@@ -5,30 +5,27 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: |
-        echo "Installing dependencies..."
+    # Build Docker Image
+    - name: Build Docker Image
+      run: docker build -t myapp .
 
-    - name: Build application
+    # Run Container
+    - name: Run Container
       run: |
-        echo "Building application..."
+        docker run -d -p 3000:3000 --name mycontainer myapp
 
-    - name: Run tests
+    # Check Running Containers
+    - name: Verify Container
+      run: docker ps
+
+    # Test Application (optional)
+    - name: Test App
       run: |
-        echo "Running tests..."
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Deploy to server
-      run: |
-        echo "Deploying application..."
+        curl http://localhost:3000 || echo "App not responding"
